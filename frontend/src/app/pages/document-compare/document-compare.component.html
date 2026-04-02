@@ -25,6 +25,7 @@
             id="originalInput"
             type="file"
             class="file-input hidden-file-input"
+            aria-label="Upload original document"
             accept=".pdf,.docx,.txt"
             (change)="onFileSelected($event, 'original')">
           <div class="upload-content" *ngIf="!originalFile">
@@ -71,6 +72,7 @@
             id="revisedInput"
             type="file"
             class="file-input hidden-file-input"
+            aria-label="Upload revised document"
             accept=".pdf,.docx,.txt"
             (change)="onFileSelected($event, 'revised')">
           <div class="upload-content" *ngIf="!revisedFile">

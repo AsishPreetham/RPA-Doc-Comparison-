@@ -70,6 +70,7 @@
           <input type="file"
                  id="fileA"
                  class="hidden-file-input"
+                 aria-label="Upload original document"
                  (change)="onFileSelected($event, 'A')"
                  accept=".pdf,.docx,.txt">
           <label for="fileA" class="upload-btn">Choose File</label>
@@ -92,6 +93,7 @@
           <input type="file"
                  id="fileB"
                  class="hidden-file-input"
+                 aria-label="Upload updated document"
                  (change)="onFileSelected($event, 'B')"
                  accept=".pdf,.docx,.txt">
           <label for="fileB" class="upload-btn">Choose File</label>
