@@ -1,0 +1,319 @@
+<div class="document-compare-container">
+  <!-- Header Section -->
+  <div class="header-section">
+    <div class="header-card">
+      <h1 class="page-title">Document Comparison</h1>
+      <p class="page-subtitle">Upload two documents and analyze the differences between them</p>
+    </div>
+  </div>
+
+  <!-- Upload Section -->
+  <div class="upload-section">
+    <div class="upload-panels">
+      <!-- Document 1 Panel -->
+      <div class="upload-panel">
+        <h3 class="panel-title">Document 1</h3>
+        <div
+          class="upload-area"
+          [class.drag-over]="isDragOverOriginal"
+          (dragover)="onDragOver($event, 'original')"
+          (dragleave)="onDragLeave($event, 'original')"
+          (drop)="onDrop($event, 'original')"
+          (click)="originalInput?.click()">
+          <input
+            #originalInput
+            id="originalInput"
+            type="file"
+            class="file-input"
+            accept=".pdf,.docx,.txt"
+            (change)="onFileSelected($event, 'original')"
+            style="display: none;">
+          <div class="upload-content" *ngIf="!originalFile">
+            <div class="upload-icon">📄</div>
+            <p class="upload-text">Drag and drop a file here or click to browse</p>
+            <p class="upload-note">Supported formats: PDF, DOCX, TXT</p>
+          </div>
+          <div class="file-info" *ngIf="originalFile">
+            <div class="file-icon">📄</div>
+            <div class="file-details">
+              <p class="file-name">{{ originalFile.name }}</p>
+              <p class="file-size">{{ originalFile.sizeFormatted }}</p>
+            </div>
+            <button
+              class="remove-btn"
+              (click)="removeFile('original'); $event.stopPropagation()"
+              aria-label="Remove file">
+              ✕
+            </button>
+          </div>
+        </div>
+        <div class="upload-actions">
+          <button
+            class="browse-btn"
+            (click)="originalInput?.click()"
+            *ngIf="!originalFile">
+            Browse Files
+          </button>
+        </div>
+      </div>
+
+      <!-- Document 2 Panel -->
+      <div class="upload-panel">
+        <h3 class="panel-title">Document 2</h3>
+        <div
+          class="upload-area"
+          [class.drag-over]="isDragOverRevised"
+          (dragover)="onDragOver($event, 'revised')"
+          (dragleave)="onDragLeave($event, 'revised')"
+          (drop)="onDrop($event, 'revised')"
+          (click)="revisedInput?.click()">
+          <input
+            #revisedInput
+            id="revisedInput"
+            type="file"
+            class="file-input"
+            accept=".pdf,.docx,.txt"
+            (change)="onFileSelected($event, 'revised')"
+            style="display: none;">
+          <div class="upload-content" *ngIf="!revisedFile">
+            <div class="upload-icon">📄</div>
+            <p class="upload-text">Drag and drop a file here or click to browse</p>
+            <p class="upload-note">Supported formats: PDF, DOCX, TXT</p>
+          </div>
+          <div class="file-info" *ngIf="revisedFile">
+            <div class="file-icon">📄</div>
+            <div class="file-details">
+              <p class="file-name">{{ revisedFile.name }}</p>
+              <p class="file-size">{{ revisedFile.sizeFormatted }}</p>
+            </div>
+            <button
+              class="remove-btn"
+              (click)="removeFile('revised'); $event.stopPropagation()"
+              aria-label="Remove file">
+              ✕
+            </button>
+          </div>
+        </div>
+        <div class="upload-actions">
+          <button
+            class="browse-btn"
+            (click)="revisedInput?.click()"
+            *ngIf="!revisedFile">
+            Browse Files
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Action Section -->
+  <div class="action-section">
+    <button
+      class="analyze-btn"
+      [disabled]="!canAnalyze()"
+      (click)="runAnalysis()">
+      <span *ngIf="!isAnalyzing">Run Analysis</span>
+      <span *ngIf="isAnalyzing" class="loading">
+        <span class="spinner"></span>
+        Analyzing...
+      </span>
+    </button>
+  </div>
+
+  <!-- Results Section -->
+  <div class="results-section" *ngIf="showResults && comparisonResult" @fadeIn>
+    <!-- Analysis Summary -->
+    <div class="summary-section">
+      <h2 class="section-title">Analysis Summary</h2>
+      <div class="summary-cards">
+        <div class="summary-card" [style.background-color]="getSummaryColor('total')">
+          <div class="card-icon">{{ getSummaryIcon('total') }}</div>
+          <div class="card-content">
+            <div class="card-value">{{ comparisonResult.totalDifferences }}</div>
+            <div class="card-label">Total Differences</div>
+          </div>
+        </div>
+        <div class="summary-card" [style.background-color]="getSummaryColor('added')">
+          <div class="card-icon">{{ getSummaryIcon('added') }}</div>
+          <div class="card-content">
+            <div class="card-value">{{ comparisonResult.addedCount }}</div>
+            <div class="card-label">Added Content</div>
+          </div>
+        </div>
+        <div class="summary-card" [style.background-color]="getSummaryColor('removed')">
+          <div class="card-icon">{{ getSummaryIcon('removed') }}</div>
+          <div class="card-content">
+            <div class="card-value">{{ comparisonResult.removedCount }}</div>
+            <div class="card-label">Removed Content</div>
+          </div>
+        </div>
+        <div class="summary-card" [style.background-color]="getSummaryColor('modified')">
+          <div class="card-icon">{{ getSummaryIcon('modified') }}</div>
+          <div class="card-content">
+            <div class="card-value">{{ comparisonResult.modifiedCount }}</div>
+            <div class="card-label">Modified Content</div>
+          </div>
+        </div>
+        <div class="summary-card" [style.background-color]="getSummaryColor('similarity')">
+          <div class="card-icon">{{ getSummaryIcon('similarity') }}</div>
+          <div class="card-content">
+            <div class="card-value">{{ comparisonResult.similarityScore }}%</div>
+            <div class="card-label">Similarity Score</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Visual Differences Section -->
+    <div class="differences-section">
+      <h2 class="section-title">Visual Differences</h2>
+
+      <!-- Tab Navigation -->
+      <div class="tab-navigation">
+        <button
+          class="tab-btn"
+          [class.active]="activeTab === 'overview'"
+          (click)="setActiveTab('overview')">
+          Overview
+        </button>
+        <button
+          class="tab-btn"
+          [class.active]="activeTab === 'side-by-side'"
+          (click)="setActiveTab('side-by-side')">
+          Side-by-Side Diff
+        </button>
+        <button
+          class="tab-btn"
+          [class.active]="activeTab === 'added-removed'"
+          (click)="setActiveTab('added-removed')">
+          Added / Removed
+        </button>
+        <button
+          class="tab-btn"
+          [class.active]="activeTab === 'full-content'"
+          (click)="setActiveTab('full-content')">
+          Full Content
+        </button>
+      </div>
+
+      <!-- Tab Content -->
+      <div class="tab-content">
+        <!-- Overview Tab -->
+        <div class="tab-pane" *ngIf="activeTab === 'overview'">
+          <div class="overview-content">
+            <div class="overview-item">
+              <div class="overview-label">Added Content</div>
+              <div class="overview-bar">
+                <div
+                  class="overview-fill added"
+                  [style.width.%]="(comparisonResult.addedCount / comparisonResult.totalDifferences) * 100">
+                </div>
+              </div>
+              <div class="overview-value">{{ comparisonResult.addedCount }}</div>
+            </div>
+            <div class="overview-item">
+              <div class="overview-label">Removed Content</div>
+              <div class="overview-bar">
+                <div
+                  class="overview-fill removed"
+                  [style.width.%]="(comparisonResult.removedCount / comparisonResult.totalDifferences) * 100">
+                </div>
+              </div>
+              <div class="overview-value">{{ comparisonResult.removedCount }}</div>
+            </div>
+            <div class="overview-item">
+              <div class="overview-label">Modified Content</div>
+              <div class="overview-bar">
+                <div
+                  class="overview-fill modified"
+                  [style.width.%]="(comparisonResult.modifiedCount / comparisonResult.totalDifferences) * 100">
+                </div>
+              </div>
+              <div class="overview-value">{{ comparisonResult.modifiedCount }}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Side-by-Side Diff Tab -->
+        <div class="tab-pane" *ngIf="activeTab === 'side-by-side'">
+          <div class="side-by-side-container">
+            <div class="diff-panel">
+              <h4 class="diff-title">Original Document</h4>
+              <div class="diff-content">
+                <div
+                  *ngFor="let block of comparisonResult.originalContentBlocks"
+                  class="content-block"
+                  [class]="getChangeClass(block.type)">
+                  <span class="line-number">{{ block.lineNumber }}</span>
+                  <span class="block-content">{{ block.content }}</span>
+                </div>
+              </div>
+            </div>
+            <div class="diff-panel">
+              <h4 class="diff-title">Revised Document</h4>
+              <div class="diff-content">
+                <div
+                  *ngFor="let block of comparisonResult.revisedContentBlocks"
+                  class="content-block"
+                  [class]="getChangeClass(block.type)">
+                  <span class="line-number">{{ block.lineNumber }}</span>
+                  <span class="block-content">{{ block.content }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Added / Removed Tab -->
+        <div class="tab-pane" *ngIf="activeTab === 'added-removed'">
+          <div class="changes-container">
+            <div class="changes-panel">
+              <h4 class="changes-title">Added Items</h4>
+              <div class="changes-list">
+                <div *ngFor="let item of comparisonResult.addedItems" class="change-item added">
+                  {{ item }}
+                </div>
+              </div>
+            </div>
+            <div class="changes-panel">
+              <h4 class="changes-title">Removed Items</h4>
+              <div class="changes-list">
+                <div *ngFor="let item of comparisonResult.removedItems" class="change-item removed">
+                  {{ item }}
+                </div>
+              </div>
+            </div>
+            <div class="changes-panel">
+              <h4 class="changes-title">Modified Items</h4>
+              <div class="changes-list">
+                <div *ngFor="let item of comparisonResult.modifiedItems" class="change-item modified">
+                  <div class="modified-original">{{ item.original }}</div>
+                  <div class="modified-arrow">→</div>
+                  <div class="modified-revised">{{ item.revised }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Full Content Tab -->
+        <div class="tab-pane" *ngIf="activeTab === 'full-content'">
+          <div class="full-content-container">
+            <div class="content-panel">
+              <h4 class="content-title">Original Document</h4>
+              <div class="content-text">
+                <pre>{{ comparisonResult.originalContentBlocks.map(b => b.content).join('\n') }}</pre>
+              </div>
+            </div>
+            <div class="content-panel">
+              <h4 class="content-title">Revised Document</h4>
+              <div class="content-text">
+                <pre>{{ comparisonResult.revisedContentBlocks.map(b => b.content).join('\n') }}</pre>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

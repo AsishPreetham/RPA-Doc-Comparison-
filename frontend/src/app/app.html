@@ -1,11 +1,162 @@
-<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
-<!-- * * * * * * * * * * * The content below * * * * * * * * * * * -->
-<!-- * * * * * * * * * * is only a placeholder * * * * * * * * * * -->
-<!-- * * * * * * * * * * and can be replaced.  * * * * * * * * * * -->
-<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
-<!-- * * * * * * * * * Delete the template below * * * * * * * * * -->
-<!-- * * * * * * * to get started with your project! * * * * * * * -->
-<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
+<div class="app-container">
+  <!-- Header -->
+  <header class="app-header">
+    <div class="header-content">
+      <div class="logo-section">
+        <div class="logo-icon">📋</div>
+        <div>
+          <h1>{{ title() }}</h1>
+          <p class="subtitle">Healthcare RPA Document Analysis System</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button class="btn-secondary" (click)="reset()" *ngIf="uploadComplete()">Reset</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Summary Cards -->
+  <section class="summary-cards" *ngIf="comparisonResult">
+    <div class="card">
+      <div class="card-icon">📊</div>
+      <div class="card-content">
+        <h3>{{ summaryStats().totalSections }}</h3>
+        <p>Total Sections Compared</p>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-icon added">➕</div>
+      <div class="card-content">
+        <h3>{{ summaryStats().addedClauses }}</h3>
+        <p>Added Clauses</p>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-icon removed">➖</div>
+      <div class="card-content">
+        <h3>{{ summaryStats().removedClauses }}</h3>
+        <p>Removed Clauses</p>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-icon modified">✏️</div>
+      <div class="card-content">
+        <h3>{{ summaryStats().modifiedClauses }}</h3>
+        <p>Modified Clauses</p>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-icon similarity">📈</div>
+      <div class="card-content">
+        <h3>{{ summaryStats().similarityScore }}%</h3>
+        <p>Similarity Score</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Upload Section -->
+  <section class="upload-section">
+    <h2>Document Upload</h2>
+    <div class="upload-grid">
+      <!-- Document A Upload -->
+      <div class="upload-area"
+           [class.drag-over]="false"
+           (dragover)="onDragOver($event)"
+           (drop)="onDrop($event, 'A')">
+        <div class="upload-content">
+          <div class="upload-icon">📄</div>
+          <h3>Original Document</h3>
+          <p>Drag & drop or click to upload</p>
+          <input type="file"
+                 id="fileA"
+                 (change)="onFileSelected($event, 'A')"
+                 accept=".pdf,.docx,.txt"
+                 style="display: none;">
+          <label for="fileA" class="upload-btn">Choose File</label>
+          <div class="file-info" *ngIf="documentAName()">
+            <span class="file-name">{{ documentAName() }}</span>
+            <span class="file-status">✓ Ready</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Document B Upload -->
+      <div class="upload-area"
+           [class.drag-over]="false"
+           (dragover)="onDragOver($event)"
+           (drop)="onDrop($event, 'B')">
+        <div class="upload-content">
+          <div class="upload-icon">📄</div>
+          <h3>Updated Document</h3>
+          <p>Drag & drop or click to upload</p>
+          <input type="file"
+                 id="fileB"
+                 (change)="onFileSelected($event, 'B')"
+                 accept=".pdf,.docx,.txt"
+                 style="display: none;">
+          <label for="fileB" class="upload-btn">Choose File</label>
+          <div class="file-info" *ngIf="documentBName()">
+            <span class="file-name">{{ documentBName() }}</span>
+            <span class="file-status">✓ Ready</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Compare Button -->
+    <div class="compare-section">
+      <button class="btn-primary compare-btn"
+              (click)="uploadAndCompare()"
+              [disabled]="!canCompare()"
+              [class.loading]="isUploading() || isComparing()">
+        <span *ngIf="!isUploading() && !isComparing()">🔍 Compare Documents</span>
+        <span *ngIf="isUploading()">Uploading...</span>
+        <span *ngIf="isComparing() && !isUploading()">Analyzing...</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- Results Section -->
+  <section class="results-section" *ngIf="comparisonResult">
+    <h2>Comparison Results</h2>
+
+    <!-- Side-by-side View -->
+    <div class="comparison-view">
+      <div class="document-panel">
+        <h3>Original Document ({{ uploadResponse?.document_a }})</h3>
+        <div class="document-content">
+          <pre>{{ uploadResponse?.document_a_preview }}</pre>
+        </div>
+      </div>
+
+      <div class="document-panel">
+        <h3>Updated Document ({{ uploadResponse?.document_b }})</h3>
+        <div class="document-content">
+          <pre>{{ uploadResponse?.document_b_preview }}</pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- Detailed Changes -->
+    <div class="changes-list">
+      <h3>Detailed Changes</h3>
+      <div class="changes-container">
+        <div *ngFor="let change of comparisonResult?.result; let i = index"
+             class="change-item"
+             [ngClass]="getChangeClass(change.type)">
+          <div class="change-header">
+            <span class="change-type">{{ change.type.toUpperCase() }}</span>
+            <span class="change-section" *ngIf="change.section">{{ change.section }}</span>
+            <span class="change-line" *ngIf="change.line_number">Line {{ change.line_number }}</span>
+          </div>
+          <div class="change-content">
+            {{ change.text }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
 
 <style>
   :host {
@@ -337,6 +488,3 @@
 <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
 <!-- * * * * * * * * * * End of Placeholder  * * * * * * * * * * * * -->
 <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
-
-
-<router-outlet />
