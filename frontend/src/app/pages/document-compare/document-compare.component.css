@@ -621,6 +621,9 @@
   font-size: 0.8rem;
   text-align: right;
   margin-right: 12px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
   user-select: none;
   opacity: 0.7;
 }
