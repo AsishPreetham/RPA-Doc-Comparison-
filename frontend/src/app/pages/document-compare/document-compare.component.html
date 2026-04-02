@@ -24,10 +24,9 @@
             #originalInput
             id="originalInput"
             type="file"
-            class="file-input"
+            class="file-input hidden-file-input"
             accept=".pdf,.docx,.txt"
-            (change)="onFileSelected($event, 'original')"
-            style="display: none;">
+            (change)="onFileSelected($event, 'original')">
           <div class="upload-content" *ngIf="!originalFile">
             <div class="upload-icon">📄</div>
             <p class="upload-text">Drag and drop a file here or click to browse</p>
@@ -71,10 +70,9 @@
             #revisedInput
             id="revisedInput"
             type="file"
-            class="file-input"
+            class="file-input hidden-file-input"
             accept=".pdf,.docx,.txt"
-            (change)="onFileSelected($event, 'revised')"
-            style="display: none;">
+            (change)="onFileSelected($event, 'revised')">
           <div class="upload-content" *ngIf="!revisedFile">
             <div class="upload-icon">📄</div>
             <p class="upload-text">Drag and drop a file here or click to browse</p>
@@ -126,35 +124,35 @@
     <div class="summary-section">
       <h2 class="section-title">Analysis Summary</h2>
       <div class="summary-cards">
-        <div class="summary-card" [style.background-color]="getSummaryColor('total')">
+        <div class="summary-card" [ngClass]="getSummaryClass('total')">
           <div class="card-icon">{{ getSummaryIcon('total') }}</div>
           <div class="card-content">
             <div class="card-value">{{ comparisonResult.totalDifferences }}</div>
             <div class="card-label">Total Differences</div>
           </div>
         </div>
-        <div class="summary-card" [style.background-color]="getSummaryColor('added')">
+        <div class="summary-card" [ngClass]="getSummaryClass('added')">
           <div class="card-icon">{{ getSummaryIcon('added') }}</div>
           <div class="card-content">
             <div class="card-value">{{ comparisonResult.addedCount }}</div>
             <div class="card-label">Added Content</div>
           </div>
         </div>
-        <div class="summary-card" [style.background-color]="getSummaryColor('removed')">
+        <div class="summary-card" [ngClass]="getSummaryClass('removed')">
           <div class="card-icon">{{ getSummaryIcon('removed') }}</div>
           <div class="card-content">
             <div class="card-value">{{ comparisonResult.removedCount }}</div>
             <div class="card-label">Removed Content</div>
           </div>
         </div>
-        <div class="summary-card" [style.background-color]="getSummaryColor('modified')">
+        <div class="summary-card" [ngClass]="getSummaryClass('modified')">
           <div class="card-icon">{{ getSummaryIcon('modified') }}</div>
           <div class="card-content">
             <div class="card-value">{{ comparisonResult.modifiedCount }}</div>
             <div class="card-label">Modified Content</div>
           </div>
         </div>
-        <div class="summary-card" [style.background-color]="getSummaryColor('similarity')">
+        <div class="summary-card" [ngClass]="getSummaryClass('similarity')">
           <div class="card-icon">{{ getSummaryIcon('similarity') }}</div>
           <div class="card-content">
             <div class="card-value">{{ comparisonResult.similarityScore }}%</div>
@@ -206,7 +204,7 @@
               <div class="overview-bar">
                 <div
                   class="overview-fill added"
-                  [style.width.%]="(comparisonResult.addedCount / comparisonResult.totalDifferences) * 100">
+                  [ngClass]="getFillClass('added')">
                 </div>
               </div>
               <div class="overview-value">{{ comparisonResult.addedCount }}</div>
@@ -216,7 +214,7 @@
               <div class="overview-bar">
                 <div
                   class="overview-fill removed"
-                  [style.width.%]="(comparisonResult.removedCount / comparisonResult.totalDifferences) * 100">
+                  [ngClass]="getFillClass('removed')">
                 </div>
               </div>
               <div class="overview-value">{{ comparisonResult.removedCount }}</div>
@@ -226,7 +224,7 @@
               <div class="overview-bar">
                 <div
                   class="overview-fill modified"
-                  [style.width.%]="(comparisonResult.modifiedCount / comparisonResult.totalDifferences) * 100">
+                  [ngClass]="getFillClass('modified')">
                 </div>
               </div>
               <div class="overview-value">{{ comparisonResult.modifiedCount }}</div>

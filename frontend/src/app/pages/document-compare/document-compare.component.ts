@@ -262,6 +262,39 @@ The revised document has different formatting and additional content.`;
     }
   }
 
+  getSummaryClass(type: 'total' | 'added' | 'removed' | 'modified' | 'similarity'): Record<string, boolean> {
+    return {
+      'total': type === 'total',
+      'added': type === 'added',
+      'removed': type === 'removed',
+      'modified': type === 'modified',
+      'similarity': type === 'similarity'
+    };
+  }
+
+  getFillClass(type: 'added' | 'removed' | 'modified'): string {
+    if (!this.comparisonResult || this.comparisonResult.totalDifferences === 0) {
+      return 'w0';
+    }
+
+    let value = 0;
+    switch (type) {
+      case 'added':
+        value = this.comparisonResult.addedCount;
+        break;
+      case 'removed':
+        value = this.comparisonResult.removedCount;
+        break;
+      case 'modified':
+        value = this.comparisonResult.modifiedCount;
+        break;
+    }
+
+    const percentage = Math.round((value / this.comparisonResult.totalDifferences) * 100);
+    const snapped = Math.max(0, Math.min(100, Math.round(percentage / 10) * 10));
+    return `w${snapped}`;
+  }
+
   getSummaryColor(type: 'total' | 'added' | 'removed' | 'modified' | 'similarity'): string {
     switch (type) {
       case 'added': return '#d4edda';

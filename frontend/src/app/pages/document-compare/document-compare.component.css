@@ -1,4 +1,8 @@
 /* Stock Market Theme - Document Compare Component Styles */
+.hidden-file-input {
+  display: none;
+}
+
 .document-compare-container {
   position: relative;
   max-width: 1200px;
@@ -370,6 +374,33 @@
 
 .summary-card {
   background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+
+}
+
+.summary-card.total {
+  background: linear-gradient(135deg, rgba(248, 249, 250, 0.2), rgba(245, 245, 245, 0.15));
+  border: 1px solid rgba(0, 212, 255, 0.3);
+}
+
+.summary-card.added {
+  background: linear-gradient(135deg, rgba(212, 237, 218, 0.2), rgba(177, 255, 188, 0.15));
+  border: 1px solid rgba(0, 255, 136, 0.3);
+}
+
+.summary-card.removed {
+  background: linear-gradient(135deg, rgba(248, 215, 218, 0.2), rgba(255, 183, 189, 0.15));
+  border: 1px solid rgba(255, 107, 107, 0.3);
+}
+
+.summary-card.modified {
+  background: linear-gradient(135deg, rgba(255, 243, 205, 0.2), rgba(255, 238, 180, 0.15));
+  border: 1px solid rgba(255, 197, 44, 0.3);
+}
+
+.summary-card.similarity {
+  background: linear-gradient(135deg, rgba(209, 236, 241, 0.2), rgba(183, 230, 245, 0.15));
+  border: 1px solid rgba(0, 212, 255, 0.3);
+}
   border-radius: 15px;
   padding: 25px;
   display: flex;
@@ -519,12 +550,25 @@
 }
 
 .overview-fill {
+  width: 0%;
   height: 100%;
   border-radius: 12px;
   transition: width 1s ease;
   position: relative;
   overflow: hidden;
 }
+
+.overview-fill.w0 { width: 0%; }
+.overview-fill.w10 { width: 10%; }
+.overview-fill.w20 { width: 20%; }
+.overview-fill.w30 { width: 30%; }
+.overview-fill.w40 { width: 40%; }
+.overview-fill.w50 { width: 50%; }
+.overview-fill.w60 { width: 60%; }
+.overview-fill.w70 { width: 70%; }
+.overview-fill.w80 { width: 80%; }
+.overview-fill.w90 { width: 90%; }
+.overview-fill.w100 { width: 100%; }
 
 .overview-fill::before {
   content: '';
